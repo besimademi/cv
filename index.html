@@ -1,0 +1,941 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Besim Ademi CV World</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: full-screen low-poly island you walk around; HUD in the corners, a chunky hard-shadow card for each CV stop (side panel on PC, bottom sheet on phone). Single committed look. */
+:root {
+  --ink: #17202a;
+  --muted: #56616d;
+  --card: #ffffff;
+  --sky: #cfdcea;
+  --cobalt: #2348c9;
+  --signal: #e8590c;
+  --leaf: #3f7d43;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body {
+  margin: 0; overflow: hidden;
+  background: var(--sky); color: var(--ink);
+  font-family: var(--body); font-size: 16px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  -webkit-tap-highlight-color: transparent;
+}
+#game { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; outline: none; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--signal); outline-offset: 2px; }
+
+/* HUD */
+.hud { position: fixed; z-index: 5; pointer-events: none; }
+.hud > * { pointer-events: auto; }
+.brand {
+  top: calc(env(safe-area-inset-top, 0px) + 14px); left: max(16px, env(safe-area-inset-left, 0px));
+  background: var(--ink); color: #fff; padding: 8px 12px 9px;
+  box-shadow: 4px 4px 0 var(--signal);
+}
+.brand b { display: block; font-family: var(--display); font-weight: 800; font-size: 20px; line-height: 1; letter-spacing: -.01em; }
+.brand span { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; opacity: .75; }
+.top-right {
+  top: calc(env(safe-area-inset-top, 0px) + 14px); right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; gap: 8px; align-items: stretch;
+}
+.progress {
+  background: var(--card); border: 2px solid var(--ink); box-shadow: 4px 4px 0 var(--ink);
+  padding: 6px 10px; display: grid; gap: 4px; min-width: 120px;
+}
+.progress .lbl { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+.progress .lbl b { color: var(--ink); }
+.pips { display: flex; gap: 3px; }
+.pips i { width: 9px; height: 9px; border: 1.5px solid var(--ink); }
+.pips i.on { background: var(--signal); border-color: var(--signal); }
+.btn {
+  background: var(--card); border: 2px solid var(--ink); box-shadow: 4px 4px 0 var(--ink);
+  font-family: var(--mono); font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: .06em;
+  padding: 8px 14px; cursor: pointer; transition: transform .08s, box-shadow .08s;
+}
+.btn:hover { background: #eef2ff; }
+.btn:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--ink); }
+.btn.primary { background: var(--signal); color: #fff; border-color: var(--ink); }
+.btn.primary:hover { background: #d14d06; }
+
+.next {
+  top: calc(env(safe-area-inset-top, 0px) + 82px); left: 50%; transform: translateX(-50%);
+  background: rgba(23,32,42,.88); color: #fff; padding: 6px 12px;
+  font-family: var(--mono); font-size: 12.5px; letter-spacing: .03em; white-space: nowrap;
+  max-width: calc(100vw - 32px); overflow: hidden; text-overflow: ellipsis;
+}
+.next b { color: #ffb38a; font-weight: 600; }
+.hint {
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); left: max(16px, env(safe-area-inset-left, 0px));
+  font-family: var(--mono); font-size: 12px; color: var(--ink);
+  background: rgba(255,255,255,.85); border: 1.5px solid var(--ink); padding: 5px 9px;
+}
+.hint kbd { font-family: var(--mono); font-size: 11px; border: 1.5px solid var(--ink); border-bottom-width: 3px; padding: 0 5px; background: #fff; }
+
+/* Joystick */
+.joy { position: fixed; z-index: 6; width: 120px; height: 120px; margin: -60px 0 0 -60px; border: 3px solid rgba(23,32,42,.55); border-radius: 50%; background: rgba(255,255,255,.25); pointer-events: none; }
+.joy i { position: absolute; left: 50%; top: 50%; width: 52px; height: 52px; margin: -26px 0 0 -26px; border-radius: 50%; background: var(--signal); border: 3px solid var(--ink); }
+
+/* CV card */
+.card {
+  position: fixed; z-index: 7;
+  right: max(16px, env(safe-area-inset-right, 0px)); top: calc(env(safe-area-inset-top, 0px) + 82px);
+  width: min(410px, calc(100vw - 32px)); max-height: calc(100% - 170px); overflow: auto;
+  background: var(--card); border: 2.5px solid var(--ink); box-shadow: 8px 8px 0 var(--ink);
+  transform: translateX(calc(100% + 40px)); transition: transform .35s cubic-bezier(.2,.9,.25,1.15);
+}
+.card.show { transform: none; }
+.card-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 8px 10px 8px 14px; background: var(--ink); color: #fff; position: sticky; top: 0; }
+.card-head span { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+.card-head button { background: transparent; border: 1.5px solid rgba(255,255,255,.6); color: #fff; width: 30px; height: 28px; cursor: pointer; font-size: 16px; line-height: 1; }
+.card-inner { padding: 14px 16px 18px; display: grid; gap: 10px; }
+.card h2 { margin: 0; font-family: var(--display); font-weight: 800; font-size: 30px; line-height: 1.02; letter-spacing: -.015em; text-wrap: balance; }
+.card .sub { font-family: var(--mono); font-size: 12.5px; color: var(--signal); text-transform: uppercase; letter-spacing: .05em; }
+.card p { margin: 0; }
+.card ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+.card .tags { display: flex; flex-wrap: wrap; gap: 5px; }
+.card .tags span { font-family: var(--mono); font-size: 12px; border: 1.5px solid var(--ink); padding: 2px 7px; }
+.card .stat { display: flex; align-items: baseline; gap: 8px; }
+.card .stat b { font-family: var(--display); font-weight: 800; font-size: 56px; line-height: 1; color: var(--cobalt); }
+.card .stat span { color: var(--muted); }
+.card .grp { display: grid; gap: 5px; }
+.card .grp h3 { margin: 0; font-family: var(--mono); font-size: 11.5px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 600; }
+.card a { color: var(--cobalt); font-weight: 700; text-underline-offset: 3px; overflow-wrap: anywhere; }
+.card .contact { display: grid; gap: 8px; }
+.card .contact div { display: grid; gap: 2px; }
+.card .contact small { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+.card .email { font-weight: 700; user-select: all; overflow-wrap: anywhere; }
+.card .go { justify-self: start; margin-top: 4px; }
+
+/* Map */
+.map {
+  position: fixed; z-index: 9; inset: 0; display: grid; place-items: center;
+  background: rgba(23,32,42,.45);
+  padding: calc(env(safe-area-inset-top, 0px) + 16px) max(16px, env(safe-area-inset-right, 0px)) calc(env(safe-area-inset-bottom, 0px) + 16px) max(16px, env(safe-area-inset-left, 0px));
+}
+.map-box { width: min(460px, 100%); max-height: 100%; overflow: auto; background: var(--card); border: 2.5px solid var(--ink); box-shadow: 8px 8px 0 var(--ink); }
+.map-box header { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: var(--ink); color: #fff; font-family: var(--mono); font-size: 12px; text-transform: uppercase; letter-spacing: .08em; }
+.map-box header button { background: transparent; border: 1.5px solid rgba(255,255,255,.6); color: #fff; padding: 3px 9px; cursor: pointer; }
+.map-box p { margin: 0; padding: 10px 14px 4px; color: var(--muted); font-size: 14px; }
+.map-list { list-style: none; margin: 0; padding: 6px 0 8px; }
+.map-list button { width: 100%; display: grid; grid-template-columns: 34px 1fr auto; gap: 10px; align-items: center; text-align: left; background: transparent; border: 0; padding: 9px 14px; cursor: pointer; }
+.map-list button:hover { background: #eef2ff; }
+.map-list .n { font-family: var(--mono); font-weight: 600; color: var(--muted); }
+.map-list .t { font-weight: 700; }
+.map-list .s { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.map-list .s.done { color: var(--leaf); }
+
+/* Start screen */
+.start {
+  position: fixed; z-index: 10; inset: 0; display: flex; align-items: flex-end;
+  background: linear-gradient(180deg, rgba(23,32,42,0) 25%, rgba(23,32,42,.55) 100%);
+  padding: calc(env(safe-area-inset-top, 0px) + 16px) max(16px, env(safe-area-inset-right, 0px)) calc(env(safe-area-inset-bottom, 0px) + 24px) max(16px, env(safe-area-inset-left, 0px));
+}
+.start-box { width: min(560px, 100%); background: var(--card); border: 3px solid var(--ink); box-shadow: 10px 10px 0 var(--signal); padding: 22px 22px 20px; display: grid; gap: 12px; margin-left: clamp(0px, 4vw, 48px); margin-bottom: clamp(0px, 4vh, 40px); }
+.start-box .eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--signal); }
+.start-box h1 { margin: 0; font-family: var(--display); font-weight: 800; font-size: clamp(44px, 9vw, 76px); line-height: .92; letter-spacing: -.025em; }
+.start-box p { margin: 0; font-size: 17px; max-width: 46ch; }
+.controls { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; font-size: 14px; color: var(--muted); align-items: center; }
+.controls kbd { font-family: var(--mono); font-size: 12px; color: var(--ink); border: 1.5px solid var(--ink); border-bottom-width: 3px; padding: 1px 6px; background: #fff; white-space: nowrap; }
+.start-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
+.start-actions .btn.primary { font-size: 15px; padding: 12px 20px; }
+
+.toast {
+  position: fixed; z-index: 8; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 60px); transform: translateX(-50%);
+  background: var(--leaf); color: #fff; border: 2.5px solid var(--ink); box-shadow: 5px 5px 0 var(--ink);
+  padding: 10px 16px; font-weight: 700; max-width: calc(100vw - 32px); text-align: center;
+}
+
+.fallback { position: fixed; inset: 0; overflow: auto; z-index: 11; background: var(--sky); padding: 24px max(16px, env(safe-area-inset-right, 0px)) 40px max(16px, env(safe-area-inset-left, 0px)); }
+.fallback .card { position: static; transform: none; width: auto; max-width: 640px; max-height: none; margin: 0 auto 20px; }
+
+@media (max-width: 720px) {
+  .card {
+    left: 0; right: 0; top: auto; bottom: 0; width: auto;
+    max-height: 52%; border-width: 2.5px 0 0; box-shadow: 0 -6px 0 var(--ink);
+    transform: translateY(calc(100% + 20px));
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .card h2 { font-size: 26px; }
+  .card .stat b { font-size: 46px; }
+  .progress { min-width: 0; }
+  .pips i { width: 7px; height: 7px; }
+  .next { top: calc(env(safe-area-inset-top, 0px) + 74px); font-size: 12px; }
+  .hint { bottom: calc(env(safe-area-inset-bottom, 0px) + 12px); }
+  body.card-open .hint { display: none; }
+  .start-box { margin: 0; padding: 18px 16px 16px; box-shadow: 6px 6px 0 var(--signal); }
+}
+@media (max-width: 400px) {
+  .brand b { font-size: 17px; }
+  .btn { padding: 7px 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .card, .btn { transition: none; }
+}
+</style>
+
+<canvas id="game" tabindex="0" aria-label="3D island. Walk the path to read Besim Ademi's CV."></canvas>
+
+<div class="hud brand"><b>BESIM ADEMI</b><span>CV World · Island</span></div>
+<div class="hud top-right">
+  <div class="progress" aria-live="polite">
+    <div class="lbl">Stops <b id="count">0</b> / <b id="total">11</b></div>
+    <div class="pips" id="pips"></div>
+  </div>
+  <button class="btn" id="mapBtn" type="button">Map</button>
+</div>
+<div class="hud next" id="next" hidden></div>
+<div class="hud hint" id="hint"></div>
+<div class="joy" id="joy" hidden><i id="knob"></i></div>
+
+<aside class="card" id="card" aria-live="polite">
+  <div class="card-head"><span id="c-eyebrow"></span><button id="c-close" type="button" aria-label="Close card">✕</button></div>
+  <div class="card-inner" id="c-inner"></div>
+</aside>
+
+<div class="map" id="map" hidden>
+  <div class="map-box" role="dialog" aria-modal="true" aria-labelledby="map-title">
+    <header><span id="map-title">Island map</span><button type="button" id="mapClose">Close</button></header>
+    <p>Jump straight to any stop.</p>
+    <ul class="map-list" id="mapList"></ul>
+  </div>
+</div>
+
+<div class="start" id="start">
+  <div class="start-box">
+    <div class="eyebrow">Walk-through CV · 11 stops</div>
+    <h1>Besim<br>Ademi</h1>
+    <p>Computer Science student at the University of Tetovo, focused on AI. Walk around the island. Every glowing circle is a part of my CV.</p>
+    <div class="controls" id="controls"></div>
+    <div class="start-actions">
+      <button class="btn primary" id="play" type="button">Start walking</button>
+      <button class="btn" id="startMap" type="button">Skip to the map</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+<div class="fallback" id="fallback" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function () {
+  const $ = id => document.getElementById(id);
+  const coarse = matchMedia("(pointer: coarse)").matches;
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // ---------------- CV content ----------------
+  const tags = a => `<div class="tags">${a.map(t => `<span>${t}</span>`).join("")}</div>`;
+  const stops = [
+    { id: "welcome", label: "START", title: "Hi, I'm Besim", html: `
+        <div class="sub">Computer Science student · North Macedonia</div>
+        <p>I study Computer Science at the University of Tetovo and want to work in artificial intelligence. I build full-stack software and compete in AI and security hackathons.</p>
+        <p><b>Looking for:</b> a full-time role in AI or software.</p>
+        <p>Follow the stone path. The arrow at your feet points to the next stop.</p>` },
+    { id: "uni", label: "UNIVERSITY", title: "University of Tetovo", html: `
+        <div class="sub">Computer Science (IT) · 2023 – present</div>
+        <div class="stat"><b>9.75</b><span>/ 10 GPA</span></div>
+        <p>Studying programming, algorithms, systems and software engineering as a full-time student.</p>` },
+    { id: "course", label: "COURSE", title: "Data Science & AI minicourse", html: `
+        <div class="sub">University of Vlora · May 2025</div>
+        <ul>
+          <li>Data collection, cleaning and reshaping in R</li>
+          <li>Univariate and multivariate visualisation</li>
+          <li>Statistical tests, linear models, classification</li>
+          <li>Model evaluation, overfitting and validation</li>
+          <li>Neural networks and generative AI basics</li>
+          <li>Prompt engineering and tokenization</li>
+        </ul>` },
+    { id: "skills", label: "SKILLS", title: "Skills garden", html: `
+        <div class="grp"><h3>Programming</h3>${tags(["Python", "C++", "C#", "PHP"])}</div>
+        <div class="grp"><h3>Building software</h3>${tags(["ASP.NET Core", "React", "PostgreSQL", "SignalR", "three.js", "Docker"])}</div>
+        <div class="grp"><h3>IT support</h3>${tags(["Troubleshooting", "Root cause analysis", "Remote support", "Ticketing", "Diagnostics", "System configuration"])}</div>
+        <div class="grp"><h3>Tools</h3>${tags(["Windows", "Microsoft 365"])}</div>
+        <div class="grp"><h3>Soft skills</h3>${tags(["Communication", "Collaboration", "Time management", "Problem solving"])}</div>
+        <div class="grp"><h3>Languages</h3>${tags(["Albanian · native", "English · fluent"])}</div>` },
+    { id: "bit", label: "BITORDER", title: "BitOrder", html: `
+        <div class="sub">Project · restaurant ordering platform</div>
+        <p>A multi-tenant ordering and management system for restaurants and cafés. Guests order from a QR code at the table, the kitchen screen updates live, cashiers split bills, drivers get a delivery flow and managers get reports.</p>
+        ${tags(["ASP.NET Core", "React", "PostgreSQL", "SignalR", "JWT auth", "Stripe", "Docker"])}` },
+    { id: "lwm", label: "MARKETPLACE", title: "Local Worker Marketplace", html: `
+        <div class="sub">Project · local services marketplace</div>
+        <p>Customers post jobs like plumbing or moving, local workers send offers. Accepting an offer creates the job and rejects the rest in one step. Both sides confirm the work before a review unlocks, and every job has its own live chat.</p>
+        ${tags(["ASP.NET Core MVC", "Clean Architecture", "SignalR chat", "Entity Framework", "Docker"])}` },
+    { id: "video", label: "VIDEO STUDIO", title: "3D video pipelines", html: `
+        <div class="sub">Project · code-driven video</div>
+        <p>Short vertical videos built entirely in code for client content series. 3D scenes are made procedurally, narrated with neural text-to-speech and rendered to 1080 × 1920 MP4.</p>
+        ${tags(["Python", "three.js", "Remotion", "React Three Fiber", "edge-tts"])}` },
+    { id: "support", label: "SUPPORT DESK", title: "Freelance IT support", html: `
+        <div class="sub">Technical Support Specialist · remote · 2024 – ongoing</div>
+        <ul>
+          <li>Online support for clients via chat, email and remote tools</li>
+          <li>Hardware and software fixes, setup and configuration, diagnostics</li>
+          <li>High client satisfaction through clear communication</li>
+          <li>Ticketing systems and structured troubleshooting</li>
+        </ul>` },
+    { id: "icdc", label: "CYBERSECURITY", title: "ICDC 2026", html: `
+        <div class="sub">Participant · RIT Kosovo · February 2026</div>
+        <p>The 5th International Cybersecurity Defense Challenge, with 200+ participants in 20 teams from across the region.</p>
+        <ul>
+          <li>Cryptography</li>
+          <li>Network security</li>
+          <li>Reverse engineering</li>
+          <li>Web security</li>
+        </ul>` },
+    { id: "trophy", label: "1ST PLACE", title: "AlbaNovus Hackathon winner", html: `
+        <div class="sub">AI & Data Science · Vlorë · June 2026</div>
+        <div class="stat"><b>1st</b><span>of 56 students, 7 universities</span></div>
+        <p>Won the hackathon at the international workshop “Foundations of Data Science and AI”, organised by the AlbaNovus Center for Mathematics and Intelligent Systems at University “Ismail Qemali”. Judged on experimental design and innovation in AI.</p>` },
+    { id: "contact", label: "SAY HI", title: "Let's talk", html: `
+        <div class="sub">Open to full-time roles</div>
+        <div class="contact">
+          <div><small>Email</small><span class="email" id="emailText">besim.ademi2004@proton.me</span></div>
+          <button class="btn go" type="button" data-copy>Copy email</button>
+          <div><small>GitHub</small><a href="https://github.com/besimademi" target="_blank" rel="noopener">github.com/besimademi</a></div>
+          <div><small>LinkedIn</small><a href="https://www.linkedin.com/in/besim-ademi-4723a1369/" target="_blank" rel="noopener">linkedin.com/in/besim-ademi</a></div>
+        </div>` },
+  ];
+  const N = stops.length;
+  const pad2 = n => String(n).padStart(2, "0");
+
+  // Copy email (works in card and fallback)
+  document.addEventListener("click", e => {
+    const b = e.target.closest("[data-copy]"); if (!b) return;
+    const text = "besim.ademi2004@proton.me";
+    const done = m => { b.textContent = m; setTimeout(() => b.textContent = "Copy email", 1800); };
+    const fallback = () => {
+      const el = b.parentElement.querySelector(".email");
+      const r = document.createRange(); r.selectNodeContents(el);
+      const s = getSelection(); s.removeAllRanges(); s.addRange(r); done("Selected, copy it");
+    };
+    try { navigator.clipboard.writeText(text).then(() => done("Copied"), fallback); } catch (err) { fallback(); }
+  });
+
+  // Controls text
+  $("controls").innerHTML = coarse
+    ? `<kbd>Drag</kbd><span>Touch anywhere and drag to walk</span><kbd>Map</kbd><span>Jump to any stop</span>`
+    : `<kbd>W A S D</kbd><span>or arrow keys to walk</span><kbd>Shift</kbd><span>hold to run</span><kbd>M</kbd><span>open the map</span>`;
+  $("hint").innerHTML = coarse ? "Drag anywhere to walk" : "<kbd>WASD</kbd> walk · <kbd>Shift</kbd> run · <kbd>M</kbd> map";
+
+  // ---------------- WebGL setup ----------------
+  const canvas = $("game");
+  let renderer = null;
+  try {
+    renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" });
+    if (!renderer.getContext()) throw new Error("no gl");
+  } catch (e) { renderer = null; }
+  if (!window.THREE || !renderer) {
+    const fb = $("fallback"); fb.hidden = false;
+    fb.innerHTML = stops.map((s, i) => `<aside class="card"><div class="card-head"><span>Stop ${pad2(i + 1)}</span></div><div class="card-inner"><h2>${s.title}</h2>${s.html}</div></aside>`).join("");
+    document.body.style.overflow = "auto";
+    ["start", "card", "map"].forEach(id => $(id).hidden = true);
+    document.querySelectorAll(".hud").forEach(h => h.hidden = true);
+    return;
+  }
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, coarse ? 1.5 : 2));
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+  const scene = new THREE.Scene();
+  {
+    const c = document.createElement("canvas"); c.width = 2; c.height = 256;
+    const g = c.getContext("2d"), gr = g.createLinearGradient(0, 0, 0, 256);
+    gr.addColorStop(0, "#7fa9dc"); gr.addColorStop(0.55, "#c4d6ea"); gr.addColorStop(1, "#f2d9c0");
+    g.fillStyle = gr; g.fillRect(0, 0, 2, 256);
+    const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; scene.background = t;
+  }
+  scene.fog = new THREE.Fog(0xd9dfe6, 55, 130);
+  const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 400);
+
+  scene.add(new THREE.HemisphereLight(0xe4efff, 0x56683a, 0.8));
+  const sun = new THREE.DirectionalLight(0xfff0d8, 1.15);
+  sun.position.set(-26, 42, 22); sun.castShadow = true;
+  sun.shadow.mapSize.set(coarse ? 1024 : 2048, coarse ? 1024 : 2048);
+  Object.assign(sun.shadow.camera, { left: -40, right: 40, top: 40, bottom: -40, near: 5, far: 120 });
+  sun.shadow.bias = -0.0005; sun.shadow.normalBias = 0.03;
+  scene.add(sun);
+
+  const matCache = {};
+  const M = (color, extra) => {
+    const k = color + JSON.stringify(extra || {});
+    return matCache[k] || (matCache[k] = new THREE.MeshStandardMaterial(Object.assign({ color, roughness: 0.85, flatShading: true }, extra || {})));
+  };
+  function mesh(geo, mat, x = 0, y = 0, z = 0, parent) {
+    const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = true; m.receiveShadow = true;
+    (parent || scene).add(m); return m;
+  }
+  const box = (w, h, d) => new THREE.BoxGeometry(w, h, d);
+  const cyl = (rt, rb, h, s = 12) => new THREE.CylinderGeometry(rt, rb, h, s);
+
+  function textTex(w, h, draw) {
+    const c = document.createElement("canvas"); c.width = w; c.height = h;
+    draw(c.getContext("2d"), w, h);
+    const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; t.anisotropy = 4;
+    return t;
+  }
+  // A board with a printed front face
+  function board(w, h, d, draw, parent, x, y, z, color = 0xffffff) {
+    const tw = 512, th = Math.round(512 * h / w);
+    const t = textTex(tw, th, draw);
+    const side = M(0x2b2f36);
+    const front = new THREE.MeshStandardMaterial({ map: t, roughness: 0.7, color });
+    return mesh(box(w, h, d), [side, side, side, side, front, side], x, y, z, parent);
+  }
+  const FONT = (wt, px) => `${wt} ${px}px "Bricolage Grotesque", "Segoe UI", sans-serif`;
+  const MONO = (wt, px) => `${wt} ${px}px "IBM Plex Mono", Consolas, monospace`;
+  function signDraw(lines, bg = "#17202a", fg = "#ffffff", accent = "#e8590c") {
+    return (g, w, h) => {
+      g.fillStyle = bg; g.fillRect(0, 0, w, h);
+      g.fillStyle = accent; g.fillRect(0, h - 14, w, 14);
+      g.fillStyle = fg; g.textAlign = "center"; g.textBaseline = "middle";
+      lines.forEach(([txt, size, y, font]) => { g.font = (font || FONT)(800, size); g.fillText(txt, w / 2, h * y); });
+    };
+  }
+
+  // ---------------- Island ----------------
+  const ISLAND = 34, R = 20;
+  mesh(new THREE.CircleGeometry(220, 64), M(0x3f86b8, { roughness: 0.35, flatShading: false }), 0, -0.6, 0).rotation.x = -Math.PI / 2;
+  mesh(cyl(ISLAND + 1.6, ISLAND + 2.6, 1, 72), M(0xe5d29f), 0, -0.68, 0);
+  mesh(cyl(ISLAND, ISLAND + 0.6, 1, 72), M(0x86b25a), 0, -0.5, 0);
+  const path = mesh(new THREE.RingGeometry(R - 1.45, R + 1.45, 160), M(0xdcc9a3, { flatShading: false, polygonOffset: true, polygonOffsetFactor: -1 }), 0, 0.01, 0);
+  path.rotation.x = -Math.PI / 2; path.castShadow = false;
+  // stepping stones on the path edge
+  for (let i = 0; i < 90; i++) {
+    const a = i / 90 * Math.PI * 2, rr = R + (i % 2 ? 1.6 : -1.6);
+    mesh(cyl(0.22, 0.26, 0.12, 6), M(0xbdb39d), Math.cos(a) * rr, 0.05, Math.sin(a) * rr);
+  }
+  // pond + tower ("next destination: AI")
+  const pond = mesh(new THREE.CircleGeometry(6.5, 48), M(0x4a95c7, { roughness: 0.25, flatShading: false }), 0, 0.03, 0); pond.rotation.x = -Math.PI / 2; pond.castShadow = false;
+  const rim = mesh(new THREE.RingGeometry(6.5, 7.3, 48), M(0xb9b2a3), 0, 0.025, 0); rim.rotation.x = -Math.PI / 2;
+  mesh(cyl(1.5, 1.9, 1.2, 10), M(0x9a958a), 0, 0.6, 0);
+  mesh(cyl(0.95, 1.35, 6.5, 12), M(0xf3f1ec), 0, 4.45, 0);
+  mesh(cyl(1.08, 1.17, 0.9, 12), M(0x2348c9), 0, 3.3, 0);
+  mesh(cyl(1.0, 1.04, 0.9, 12), M(0x2348c9), 0, 6.1, 0);
+  mesh(cyl(1.25, 1.25, 0.15, 12), M(0x17202a), 0, 7.75, 0);
+  const lampMat = new THREE.MeshStandardMaterial({ color: 0xffd9a8, emissive: 0xff9a4d, emissiveIntensity: 1.2, roughness: 0.3 });
+  const lamp = mesh(cyl(0.8, 0.8, 1.0, 12), lampMat, 0, 8.35, 0);
+  mesh(new THREE.ConeGeometry(1.3, 1.2, 12), M(0x17202a), 0, 9.45, 0);
+  const beacon = new THREE.PointLight(0xff9a4d, 1.4, 22, 2); beacon.position.set(0, 8.4, 0); scene.add(beacon);
+
+  // ---------------- Labels ----------------
+  function makeLabel(num, text, done) {
+    const c = document.createElement("canvas"); c.width = 640; c.height = 150;
+    const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding;
+    const draw = (isDone) => {
+      const g = c.getContext("2d"); g.clearRect(0, 0, 640, 150);
+      g.font = FONT(800, 64);
+      const tw = g.measureText(text).width, W = Math.min(640, tw + 190);
+      const x0 = (640 - W) / 2;
+      g.fillStyle = "#17202a"; g.fillRect(x0 + 8, 18, W - 8, 112);
+      g.fillStyle = isDone ? "#3f7d43" : "#e8590c"; g.fillRect(x0 + 8, 18, 110, 112);
+      g.fillStyle = "#fff"; g.textBaseline = "middle"; g.textAlign = "center";
+      g.font = MONO(600, 48); g.fillText(isDone ? "✓" : num, x0 + 63, 76);
+      g.textAlign = "left"; g.font = FONT(800, 60); g.fillText(text, x0 + 140, 78);
+      t.needsUpdate = true;
+    };
+    draw(done);
+    const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, transparent: true, depthWrite: false }));
+    s.scale.set(6.2, 6.2 * 150 / 640, 1);
+    s.renderOrder = 10;
+    s.userData.draw = draw;
+    return s;
+  }
+
+  // ---------------- Station builders (local space, facing +z) ----------------
+  const colliders = [];
+  const animated = [];
+  const B = {
+    welcome(g) {
+      [-2.1, 2.1].forEach(x => mesh(cyl(0.16, 0.2, 3.4, 8), M(0x7b5a3c), x, 1.7, 0, g));
+      board(5.2, 2.3, 0.22, signDraw([["BESIM ADEMI", 74, 0.36], ["WALK-THROUGH CV", 34, 0.66, MONO]]), g, 0, 2.6, 0);
+      mesh(cyl(0.9, 1.1, 0.5, 8), M(0x8a8f80), -3.3, 0.25, 0.6, g);
+      mesh(new THREE.IcosahedronGeometry(0.9, 0), M(0x5f9a48), -3.3, 1.1, 0.6, g);
+      return 2.8;
+    },
+    uni(g) {
+      mesh(box(7.4, 0.5, 4.8), M(0xcfc8b8), 0, 0.25, 0, g);
+      mesh(box(6.6, 3.4, 3.4), M(0xf1ece2), 0, 2.2, -0.5, g);
+      const shape = new THREE.Shape(); shape.moveTo(-3.7, 0); shape.lineTo(3.7, 0); shape.lineTo(0, 1.6); shape.closePath();
+      const roof = new THREE.ExtrudeGeometry(shape, { depth: 4.6, bevelEnabled: false }); roof.translate(0, 0, -2.3);
+      mesh(roof, M(0xa8432a), 0, 3.9, -0.3, g);
+      for (let i = 0; i < 6; i++) mesh(cyl(0.2, 0.24, 3.4, 10), M(0xffffff), -2.75 + i * 1.1, 2.2, 1.7, g);
+      board(5.4, 0.7, 0.15, signDraw([["UNIVERSITY OF TETOVO", 64, 0.45]], "#f1ece2", "#17202a", "#2348c9"), g, 0, 4.25, 1.85);
+      mesh(box(1.2, 2.0, 0.1), M(0x3b2a20), 0, 1.5, 1.22, g);
+      return 3.8;
+    },
+    course(g) {
+      const cols = [0x2348c9, 0xe8590c, 0x3f7d43, 0xf1c453, 0x7a4fb5, 0x17202a];
+      cols.forEach((c, i) => { const m = mesh(box(2.4 - i * 0.1, 0.42, 1.7), M(c), 0, 0.21 + i * 0.42, 0, g); m.rotation.y = (i % 2 ? 0.12 : -0.1) * (i + 1) * 0.5; });
+      const book = new THREE.Group(); book.position.set(0, 2.75, 0); g.add(book);
+      [-1, 1].forEach(sd => { const p = mesh(box(1.1, 0.06, 1.5), M(0xfaf7ef), sd * 0.56, 0, 0, book); p.rotation.z = sd * -0.22; });
+      animated.push(t => { book.position.y = 2.85 + Math.sin(t * 1.6) * 0.15; book.rotation.y = t * 0.5; });
+      return 2.4;
+    },
+    skills(g) {
+      const items = [["PY", 0x2348c9], ["C++", 0x2348c9], ["C#", 0x2348c9], ["PHP", 0x2348c9], ["SQL", 0x3f7d43], ["REACT", 0x3f7d43], ["IT", 0xe8590c], ["SEC", 0xe8590c], ["R / AI", 0x7a4fb5]];
+      items.forEach(([t, c], i) => {
+        const x = (i % 3 - 1) * 2.1, z = (Math.floor(i / 3) - 1) * 2.1;
+        mesh(box(1.1, 0.25, 1.1), M(0xcfc8b8), x, 0.12, z, g);
+        mesh(box(0.8, 1.8, 0.8), M(c), x, 1.15, z, g);
+        const top = board(0.8, 0.8, 0.8, (gx, w, h) => { gx.fillStyle = "#fff"; gx.fillRect(0, 0, w, h); gx.fillStyle = "#17202a"; gx.textAlign = "center"; gx.textBaseline = "middle"; gx.font = FONT(800, t.length > 3 ? 120 : 170); gx.fillText(t, w / 2, h / 2 + 8); }, g, x, 2.45, z);
+        animated.push(tt => { top.rotation.y = Math.sin(tt * 0.8 + i) * 0.5; top.position.y = 2.45 + Math.sin(tt * 1.5 + i * 0.7) * 0.08; });
+      });
+      return 3.6;
+    },
+    bit(g) {
+      mesh(box(5.4, 3.2, 3.4), M(0xf4efe6), 0, 1.6, -0.4, g);
+      mesh(box(5.6, 0.25, 3.6), M(0x17202a), 0, 3.3, -0.4, g);
+      for (let i = 0; i < 7; i++) { const s = mesh(box(0.8, 0.08, 1.5), M(i % 2 ? 0xffffff : 0xe8590c), -2.4 + i * 0.8, 2.75, 1.85, g); s.rotation.x = 0.35; }
+      mesh(box(1.1, 1.9, 0.08), M(0x3b2a20), -1.4, 0.95, 1.32, g);
+      mesh(box(1.9, 1.2, 0.08), M(0x9cc7e6, { roughness: 0.2 }), 1.1, 1.5, 1.32, g);
+      board(3.6, 0.9, 0.2, signDraw([["BITORDER", 96, 0.45]]), g, 0, 3.95, 0.6);
+      [[-1.4, 3.0], [1.4, 3.0]].forEach(([x, z]) => {
+        mesh(cyl(0.55, 0.55, 0.08, 12), M(0xffffff), x, 0.95, z, g);
+        mesh(cyl(0.07, 0.07, 0.9, 6), M(0x2b2f36), x, 0.47, z, g);
+        [-0.8, 0.8].forEach(dx => mesh(box(0.4, 0.5, 0.4), M(0x2348c9), x + dx, 0.25, z, g));
+        mesh(box(0.25, 0.32, 0.04), M(0x17202a), x, 1.15, z, g);
+      });
+      return 3.3;
+    },
+    lwm(g) {
+      mesh(box(5, 2.8, 3.4), M(0xc58b52), 0, 1.4, -0.3, g);
+      const shape = new THREE.Shape(); shape.moveTo(-2.8, 0); shape.lineTo(2.8, 0); shape.lineTo(0, 1.5); shape.closePath();
+      const roof = new THREE.ExtrudeGeometry(shape, { depth: 3.9, bevelEnabled: false }); roof.translate(0, 0, -1.95);
+      mesh(roof, M(0x3a4a5c), 0, 2.8, -0.3, g);
+      mesh(box(2.6, 2.1, 0.08), M(0xe9e3d6), -0.5, 1.05, 1.42, g);
+      for (let i = 0; i < 5; i++) mesh(box(2.6, 0.04, 0.1), M(0xbdb39d), -0.5, 0.3 + i * 0.42, 1.47, g);
+      mesh(box(1.1, 0.6, 0.55), M(0xc92a2a), 1.9, 0.3, 2.0, g);
+      mesh(box(0.6, 0.12, 0.12), M(0x2b2f36), 1.9, 0.68, 2.0, g);
+      const ladder = new THREE.Group(); ladder.position.set(2.75, 0, 0.6); ladder.rotation.z = 0.18; g.add(ladder);
+      [-0.3, 0.3].forEach(x => mesh(box(0.08, 3.2, 0.08), M(0xd9c08a), x, 1.6, 0, ladder));
+      for (let i = 0; i < 6; i++) mesh(box(0.6, 0.06, 0.06), M(0xd9c08a), 0, 0.4 + i * 0.5, 0, ladder);
+      board(4.4, 0.85, 0.16, signDraw([["LOCAL WORKER MARKETPLACE", 40, 0.45]]), g, 0, 3.15, 1.5);
+      return 3.2;
+    },
+    video(g) {
+      mesh(box(2.8, 4.6, 0.25), M(0x17202a), 0, 2.9, -0.6, g);
+      [-1.0, 1.0].forEach(x => mesh(box(0.12, 0.8, 0.12), M(0x2b2f36), x, 0.4, -0.6, g));
+      const scr = board(2.5, 4.3, 0.05, (gx, w, h) => {
+        const gr = gx.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, "#0d0f12"); gr.addColorStop(1, "#22262d");
+        gx.fillStyle = gr; gx.fillRect(0, 0, w, h);
+        gx.fillStyle = "#ffffff"; gx.textAlign = "center"; gx.font = FONT(800, 58); gx.fillText("3D · VOICE", w / 2, h * 0.16);
+        gx.fillStyle = "#d6b48a"; gx.fillText("RENDERED", w / 2, h * 0.16 + 64);
+        gx.fillStyle = "#e8590c"; gx.beginPath(); gx.moveTo(w / 2 - 50, h / 2 - 60); gx.lineTo(w / 2 + 60, h / 2); gx.lineTo(w / 2 - 50, h / 2 + 60); gx.closePath(); gx.fill();
+        gx.fillStyle = "#9aa3ad"; gx.font = MONO(600, 34); gx.fillText("1080 × 1920 · 30 FPS", w / 2, h * 0.88);
+      }, g, 0, 2.9, -0.46);
+      scr.castShadow = false;
+      const cam = new THREE.Group(); cam.position.set(1.7, 0, 2.6); g.add(cam);
+      [0, 2.1, 4.2].forEach(a => { const l = mesh(cyl(0.04, 0.04, 1.7, 5), M(0x2b2f36), Math.cos(a) * 0.35, 0.8, Math.sin(a) * 0.35, cam); l.rotation.set(Math.sin(a) * 0.4, 0, -Math.cos(a) * 0.4); });
+      const head = new THREE.Group(); head.position.y = 1.75; cam.add(head);
+      mesh(box(0.6, 0.45, 0.8), M(0x17202a), 0, 0, 0, head);
+      const lens = mesh(cyl(0.16, 0.2, 0.35, 12), M(0x2b2f36), 0, 0, -0.55, head); lens.rotation.x = Math.PI / 2;
+      const rec = mesh(new THREE.SphereGeometry(0.06, 8, 6), new THREE.MeshBasicMaterial({ color: 0xff3b30 }), 0.2, 0.28, 0.3, head);
+      head.rotation.y = 0.5;
+      animated.push(t => { rec.visible = Math.floor(t * 2) % 2 === 0; head.rotation.y = 0.5 + Math.sin(t * 0.6) * 0.15; });
+      return 2.6;
+    },
+    support(g) {
+      mesh(box(3.4, 0.14, 1.5), M(0xe9e3d6), 0, 1.05, 0, g);
+      [[-1.55, -0.6], [1.55, -0.6], [-1.55, 0.6], [1.55, 0.6]].forEach(([x, z]) => mesh(box(0.1, 1.0, 0.1), M(0x2b2f36), x, 0.5, z, g));
+      mesh(box(0.15, 0.5, 0.15), M(0x2b2f36), 0, 1.35, -0.35, g);
+      mesh(box(1.9, 1.15, 0.1), M(0x17202a), 0, 2.15, -0.35, g);
+      const scr = board(1.75, 1.0, 0.02, (gx, w, h) => {
+        gx.fillStyle = "#e9f5ec"; gx.fillRect(0, 0, w, h);
+        gx.fillStyle = "#17202a"; gx.font = MONO(600, 34); gx.textAlign = "left"; gx.fillText("TICKET", 30, 70);
+        gx.fillStyle = "#3f7d43"; gx.font = FONT(800, 78); gx.fillText("RESOLVED ✓", 30, 170);
+        gx.fillStyle = "#56616d"; gx.font = MONO(500, 26); gx.fillText("remote session closed", 30, 230);
+      }, g, 0, 2.15, -0.29);
+      scr.castShadow = false;
+      mesh(box(0.9, 0.05, 0.35), M(0x2b2f36), 0, 1.15, 0.3, g);
+      mesh(box(0.9, 0.12, 0.9), M(0x2348c9), 0, 0.6, 1.4, g);
+      mesh(box(0.9, 1.0, 0.12), M(0x2348c9), 0, 1.1, 1.85, g);
+      mesh(cyl(0.05, 0.05, 0.6, 6), M(0x2b2f36), 0, 0.3, 1.4, g);
+      const mug = mesh(cyl(0.14, 0.12, 0.25, 10), M(0xe8590c), 1.2, 1.25, 0.2, g);
+      return 2.4;
+    },
+    icdc(g) {
+      const leds = [];
+      [-1.5, 0, 1.5].forEach(x => {
+        mesh(box(1.2, 3.2, 1.2), M(0x22272e), x, 1.6, -0.2, g);
+        for (let r = 0; r < 6; r++) {
+          mesh(box(1.0, 0.3, 0.04), M(0x2f353d), x, 0.6 + r * 0.45, 0.41, g);
+          const m = new THREE.MeshBasicMaterial({ color: r % 3 === 0 ? 0xe8590c : 0x58d68d });
+          const l = mesh(box(0.08, 0.08, 0.04), m, x + 0.35, 0.6 + r * 0.45, 0.44, g); l.castShadow = false;
+          leds.push(l);
+        }
+      });
+      animated.push(t => leds.forEach((l, i) => l.visible = Math.sin(t * (3 + i % 4) + i * 1.7) > -0.3));
+      const shield = new THREE.Shape();
+      shield.moveTo(0, 1.1); shield.lineTo(0.9, 0.8); shield.lineTo(0.8, -0.2); shield.quadraticCurveTo(0.5, -0.9, 0, -1.2); shield.quadraticCurveTo(-0.5, -0.9, -0.8, -0.2); shield.lineTo(-0.9, 0.8); shield.closePath();
+      const sh = mesh(new THREE.ExtrudeGeometry(shield, { depth: 0.2, bevelEnabled: false }), M(0x2348c9), 0, 4.6, -0.3, g);
+      animated.push(t => { sh.rotation.y = Math.sin(t * 0.9) * 0.6; sh.position.y = 4.6 + Math.sin(t * 1.4) * 0.12; });
+      board(3.4, 0.7, 0.14, signDraw([["ICDC 2026 · RIT KOSOVO", 48, 0.45]]), g, 0, 0.45, 1.0);
+      return 2.9;
+    },
+    trophy(g) {
+      [[0, 1.3, "1", 0xf1c453], [-1.6, 0.85, "2", 0xcfd4da], [1.6, 0.55, "3", 0xc6905a]].forEach(([x, h, n, c]) => {
+        mesh(box(1.5, h, 1.5), M(0xf3f1ec), x, h / 2, 0, g);
+        board(0.9, 0.9, 0.04, (gx, w, hh) => { gx.fillStyle = "#" + c.toString(16).padStart(6, "0"); gx.fillRect(0, 0, w, hh); gx.fillStyle = "#17202a"; gx.font = FONT(800, 360); gx.textAlign = "center"; gx.textBaseline = "middle"; gx.fillText(n, w / 2, hh / 2 + 20); }, g, x, h / 2, 0.77).castShadow = false;
+      });
+      const cup = new THREE.Group(); cup.position.set(0, 1.3, 0); g.add(cup);
+      const gold = M(0xf1c453, { metalness: 0.6, roughness: 0.3, flatShading: false });
+      mesh(box(0.7, 0.2, 0.7), M(0x17202a), 0, 0.1, 0, cup);
+      mesh(cyl(0.1, 0.16, 0.6, 10), gold, 0, 0.5, 0, cup);
+      mesh(cyl(0.6, 0.25, 0.9, 16), gold, 0, 1.25, 0, cup);
+      [-1, 1].forEach(sd => { const h = mesh(new THREE.TorusGeometry(0.25, 0.06, 6, 14), gold, sd * 0.62, 1.35, 0, cup); h.rotation.y = Math.PI / 2; });
+      const spark = new THREE.PointLight(0xffd36b, 0.9, 7, 2); spark.position.set(0, 3.4, 1); g.add(spark);
+      animated.push(t => { cup.rotation.y = t * 0.9; spark.intensity = 0.7 + Math.sin(t * 3) * 0.3; });
+      return 2.8;
+    },
+    contact(g) {
+      mesh(box(0.2, 1.4, 0.2), M(0x2b2f36), 0, 0.7, 0, g);
+      mesh(box(1.5, 0.75, 1.0), M(0xc92a2a), 0, 1.75, 0, g);
+      const top = mesh(new THREE.CylinderGeometry(0.5, 0.5, 1.5, 16, 1, false, 0, Math.PI), M(0xc92a2a), 0, 2.12, 0, g);
+      top.rotation.z = Math.PI / 2;
+      mesh(box(0.7, 0.08, 0.04), M(0x17202a), 0, 1.9, 0.52, g);
+      const flag = new THREE.Group(); flag.position.set(0.8, 1.5, 0); g.add(flag);
+      mesh(box(0.06, 0.9, 0.06), M(0xf1c453), 0, 0.45, 0, flag);
+      mesh(box(0.06, 0.3, 0.4), M(0xf1c453), 0, 0.8, 0.2, flag);
+      animated.push(t => { flag.rotation.x = -0.2 + Math.sin(t * 2) * 0.15; });
+      board(3.0, 1.2, 0.18, signDraw([["SAY HI", 120, 0.48]], "#e8590c", "#ffffff", "#17202a"), g, -2.4, 2.3, 0);
+      [-3.5, -1.3].forEach(x => mesh(cyl(0.1, 0.12, 2.3, 6), M(0x7b5a3c), x, 1.15, -0.05, g));
+      // paper plane circling
+      const plane = new THREE.Group(); g.add(plane);
+      const pg = new THREE.BufferGeometry();
+      pg.setAttribute("position", new THREE.Float32BufferAttribute([0, 0, 0.6, -0.45, 0, -0.4, 0, 0.05, -0.25, 0, 0, 0.6, 0, 0.05, -0.25, 0.45, 0, -0.4, 0, 0, 0.6, 0, -0.2, -0.3, 0, 0.05, -0.25], 3));
+      pg.computeVertexNormals();
+      const pm = mesh(pg, new THREE.MeshStandardMaterial({ color: 0xffffff, side: THREE.DoubleSide, flatShading: true }), 0, 0, 0, plane);
+      animated.push(t => { const a = t * 0.9; plane.position.set(Math.cos(a) * 2.2, 3.6 + Math.sin(t * 2) * 0.3, Math.sin(a) * 1.4); plane.rotation.y = -a; plane.rotation.z = 0.3; });
+      return 2.2;
+    },
+  };
+
+  // ---------------- Place stations ----------------
+  const world = [];
+  stops.forEach((s, i) => {
+    const a = Math.PI / 2 + i * (Math.PI * 2 / N);
+    const px = Math.cos(a) * R, pz = Math.sin(a) * R;
+    const ox = px, oz = pz - 6.8;
+    const g = new THREE.Group(); g.position.set(ox, 0, oz); scene.add(g);
+    const radius = B[s.id](g);
+    colliders.push({ x: ox, z: oz, r: radius });
+    const tx = px, tz = pz - 1.0;
+    const ringMat = new THREE.MeshBasicMaterial({ color: 0xe8590c, transparent: true, opacity: 0.85, depthWrite: false });
+    const ring = new THREE.Mesh(new THREE.RingGeometry(2.3, 2.75, 48), ringMat);
+    ring.rotation.x = -Math.PI / 2; ring.position.set(tx, 0.04, tz); scene.add(ring);
+    const disc = new THREE.Mesh(new THREE.CircleGeometry(2.3, 48), new THREE.MeshBasicMaterial({ color: 0xe8590c, transparent: true, opacity: 0.12, depthWrite: false }));
+    disc.rotation.x = -Math.PI / 2; disc.position.set(tx, 0.035, tz); scene.add(disc);
+    const label = makeLabel(pad2(i + 1), s.label, false);
+    label.position.set(ox, 6.6, oz + 0.5); scene.add(label);
+    world.push({ s, i, tx, tz, ox, oz, ring, ringMat, disc, label, visited: false });
+  });
+
+  // ---------------- Trees and rocks ----------------
+  let seed = 11; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const leafCols = [0x4f8f45, 0x5f9f4a, 0x3f7d43, 0x73a852];
+  const trees = [];
+  let placed = 0, tries = 0;
+  while (placed < 85 && tries < 3000) {
+    tries++;
+    const a = rnd() * Math.PI * 2, r = 8.5 + rnd() * 24;
+    const x = Math.cos(a) * r, z = Math.sin(a) * r;
+    if (Math.abs(r - R) < 2.6) continue;
+    if (world.some(w => Math.hypot(x - w.ox, z - w.oz) < 6.5 || Math.hypot(x - w.tx, z - w.tz) < 3.5)) continue;
+    if (colliders.some(c => c.tree && Math.hypot(x - c.x, z - c.z) < 2.2)) continue;
+    const sc = 0.8 + rnd() * 0.7;
+    if (rnd() < 0.18) {
+      const rock = mesh(new THREE.DodecahedronGeometry(0.6 * sc, 0), M(0x9a958a), x, 0.3 * sc, z);
+      rock.rotation.set(rnd(), rnd(), rnd());
+      colliders.push({ x, z, r: 0.6 * sc, tree: true });
+    } else {
+      const col = leafCols[Math.floor(rnd() * leafCols.length)];
+      const parts = [mesh(cyl(0.16 * sc, 0.24 * sc, 1.3 * sc, 6), M(0x7b5a3c), x, 0.65 * sc, z)];
+      if (rnd() < 0.5) {
+        parts.push(mesh(new THREE.ConeGeometry(1.15 * sc, 2.2 * sc, 7), M(col), x, 2.1 * sc, z));
+        parts.push(mesh(new THREE.ConeGeometry(0.85 * sc, 1.6 * sc, 7), M(col), x, 3.0 * sc, z));
+      } else {
+        parts.push(mesh(new THREE.IcosahedronGeometry(1.15 * sc, 0), M(col), x, 2.2 * sc, z));
+      }
+      // own materials so a tree can fade when it blocks the view
+      const mats = parts.map(p => (p.material = p.material.clone(), p.material.transparent = true, p.material));
+      trees.push({ x, z, mats, o: 1 });
+      colliders.push({ x, z, r: 0.45 * sc, tree: true });
+    }
+    placed++;
+  }
+  colliders.push({ x: 0, z: 0, r: 7.0 });
+
+  // Clouds
+  const clouds = [];
+  for (let i = 0; i < 9; i++) {
+    const c = new THREE.Group();
+    for (let k = 0; k < 4; k++) {
+      const m = new THREE.Mesh(new THREE.IcosahedronGeometry(1.6 + rnd() * 1.4, 0), new THREE.MeshStandardMaterial({ color: 0xffffff, flatShading: true, roughness: 1 }));
+      m.position.set(k * 1.8 - 2.7, rnd() * 0.8, rnd() * 1.2); c.add(m);
+    }
+    const a = rnd() * Math.PI * 2, r = 30 + rnd() * 30;
+    c.position.set(Math.cos(a) * r, 18 + rnd() * 8, Math.sin(a) * r);
+    c.userData = { a, r, sp: 0.004 + rnd() * 0.006 };
+    scene.add(c); clouds.push(c);
+  }
+
+  // ---------------- Player ----------------
+  const player = new THREE.Group(); scene.add(player);
+  const skin = M(0xe0b08a), shirt = M(0x2348c9), pants = M(0x2b2f36), hairM = M(0x2a1c14), bag = M(0xe8590c);
+  const torso = mesh(box(0.85, 1.0, 0.5), shirt, 0, 1.45, 0, player);
+  mesh(new THREE.SphereGeometry(0.36, 12, 10), skin, 0, 2.28, 0, player);
+  const hair = mesh(new THREE.SphereGeometry(0.38, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2), hairM, 0, 2.33, -0.02, player);
+  mesh(box(0.65, 0.75, 0.32), bag, 0, 1.5, -0.4, player);
+  const limbs = {};
+  [["lLeg", -0.21, 0.92, 0.3, 0.9, pants], ["rLeg", 0.21, 0.92, 0.3, 0.9, pants], ["lArm", -0.56, 1.88, 0.22, 0.85, shirt], ["rArm", 0.56, 1.88, 0.22, 0.85, shirt]].forEach(([k, x, y, w, h, m]) => {
+    const pv = new THREE.Group(); pv.position.set(x, y, 0); player.add(pv);
+    mesh(box(w, h, 0.28), m, 0, -h / 2, 0, pv);
+    if (k.includes("Arm")) mesh(new THREE.SphereGeometry(0.12, 6, 5), skin, 0, -h - 0.02, 0, pv);
+    else mesh(box(w + 0.04, 0.16, 0.42), M(0x17202a), 0, -h + 0.02, 0.06, pv);
+    limbs[k] = pv;
+  });
+  const blob = new THREE.Mesh(new THREE.CircleGeometry(0.7, 20), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.18, depthWrite: false }));
+  blob.rotation.x = -Math.PI / 2; blob.position.y = 0.03; scene.add(blob);
+
+  // Guide arrow to the next stop
+  const arrowShape = new THREE.Shape();
+  arrowShape.moveTo(0, 0.55); arrowShape.lineTo(0.42, -0.1); arrowShape.lineTo(0.16, -0.1); arrowShape.lineTo(0.16, -0.5); arrowShape.lineTo(-0.16, -0.5); arrowShape.lineTo(-0.16, -0.1); arrowShape.lineTo(-0.42, -0.1); arrowShape.closePath();
+  const arrow = new THREE.Mesh(new THREE.ShapeGeometry(arrowShape), new THREE.MeshBasicMaterial({ color: 0xe8590c, transparent: true, opacity: 0.9, depthWrite: false }));
+  arrow.rotation.order = "YXZ"; scene.add(arrow);
+
+  const start0 = world[0];
+  const P = { x: start0.tx + 0.01, z: start0.tz + 0.6, yaw: Math.PI, speed: 0, phase: 0 };
+
+  // ---------------- HUD ----------------
+  $("total").textContent = N;
+  $("pips").innerHTML = stops.map(() => "<i></i>").join("");
+  function renderMap() {
+    $("mapList").innerHTML = world.map(w => `<li><button type="button" data-i="${w.i}"><span class="n">${pad2(w.i + 1)}</span><span class="t">${w.s.title}</span><span class="s ${w.visited ? "done" : ""}">${w.visited ? "Seen" : "Go"}</span></button></li>`).join("");
+  }
+  function updateHud() {
+    const v = world.filter(w => w.visited).length;
+    $("count").textContent = v;
+    $("pips").querySelectorAll("i").forEach((p, i) => p.classList.toggle("on", world[i].visited));
+    renderMap();
+  }
+  let active = null, closedFor = null, celebrated = false;
+  function showCard(w) {
+    $("c-eyebrow").textContent = `Stop ${pad2(w.i + 1)} of ${N}`;
+    $("c-inner").innerHTML = `<h2>${w.s.title}</h2>${w.s.html}`;
+    $("card").classList.add("show"); document.body.classList.add("card-open");
+    $("card").scrollTop = 0;
+  }
+  function hideCard() { $("card").classList.remove("show"); document.body.classList.remove("card-open"); }
+  $("c-close").addEventListener("click", () => { closedFor = active; hideCard(); canvas.focus(); });
+  function visit(w) {
+    if (!w.visited) {
+      w.visited = true; w.label.userData.draw(true);
+      w.ringMat.color.set(0x3f7d43); w.disc.material.color.set(0x3f7d43);
+      updateHud();
+      if (!celebrated && world.every(x => x.visited)) {
+        celebrated = true;
+        toast("You've seen the whole CV. Thanks for walking through!");
+      }
+    }
+  }
+  let toastT = 0;
+  function toast(msg) { const t = $("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 4200); }
+
+  function openMap() { renderMap(); $("map").hidden = false; const b = $("mapList").querySelector("button"); if (b) b.focus(); }
+  function closeMap() { $("map").hidden = true; canvas.focus(); }
+  $("mapBtn").addEventListener("click", openMap);
+  $("mapClose").addEventListener("click", closeMap);
+  $("map").addEventListener("click", e => { if (e.target.id === "map") closeMap(); });
+  $("mapList").addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    const w = world[+b.dataset.i];
+    P.x = w.tx; P.z = w.tz + 0.4; P.yaw = Math.PI;
+    camPos.set(P.x, 0, P.z).add(camOffset());
+    closedFor = null;
+    begin(); closeMap();
+  });
+
+  // ---------------- Input ----------------
+  const keys = {};
+  let started = false;
+  function begin() {
+    if (started) return;
+    started = true; $("start").hidden = true; canvas.focus();
+  }
+  $("play").addEventListener("click", begin);
+  $("startMap").addEventListener("click", () => { begin(); openMap(); });
+  addEventListener("keydown", e => {
+    if (!$("map").hidden) { if (e.code === "Escape" || e.code === "KeyM") { e.preventDefault(); closeMap(); } return; }
+    const move = ["KeyW", "KeyA", "KeyS", "KeyD", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.code);
+    if (move) { if (!started) begin(); if (document.activeElement === canvas || document.activeElement === document.body) e.preventDefault(); }
+    if (e.code === "KeyM" && started) { e.preventDefault(); openMap(); return; }
+    keys[e.code] = true;
+  });
+  addEventListener("keyup", e => { keys[e.code] = false; });
+  addEventListener("blur", () => { for (const k in keys) keys[k] = false; });
+
+  const joyEl = $("joy"), knob = $("knob");
+  let joy = null; const J = { x: 0, z: 0 };
+  canvas.addEventListener("pointerdown", e => {
+    if (!started) { begin(); }
+    joy = { id: e.pointerId, x0: e.clientX, y0: e.clientY };
+    canvas.setPointerCapture(e.pointerId);
+    joyEl.style.left = e.clientX + "px"; joyEl.style.top = e.clientY + "px"; joyEl.hidden = false;
+    knob.style.transform = "translate(0,0)";
+  });
+  canvas.addEventListener("pointermove", e => {
+    if (!joy || e.pointerId !== joy.id) return;
+    let dx = e.clientX - joy.x0, dy = e.clientY - joy.y0;
+    const L = Math.hypot(dx, dy), max = 55;
+    if (L > max) { dx *= max / L; dy *= max / L; }
+    knob.style.transform = `translate(${dx}px, ${dy}px)`;
+    const k = Math.min(1, L / max);
+    J.x = L > 6 ? dx / max : 0; J.z = L > 6 ? dy / max : 0;
+    J.run = k > 0.95;
+  });
+  const endJoy = e => { if (joy && e.pointerId === joy.id) { joy = null; J.x = J.z = 0; joyEl.hidden = true; } };
+  canvas.addEventListener("pointerup", endJoy);
+  canvas.addEventListener("pointercancel", endJoy);
+
+  // ---------------- Camera ----------------
+  const camPos = new THREE.Vector3();
+  function camOffset() {
+    const portrait = innerHeight > innerWidth * 1.1;
+    return portrait ? new THREE.Vector3(0, 17, 17) : new THREE.Vector3(0, 12.5, 14.5);
+  }
+  function resize() {
+    const w = innerWidth, h = innerHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h; camera.fov = h > w ? 55 : 45; camera.updateProjectionMatrix();
+  }
+  addEventListener("resize", resize); resize();
+  camPos.set(P.x, 0, P.z).add(camOffset());
+
+  // ---------------- Loop ----------------
+  const clock = new THREE.Clock();
+  let t = 0;
+  const lerpAngle = (a, b, k) => { let d = ((b - a + Math.PI) % (Math.PI * 2)) - Math.PI; if (d < -Math.PI) d += Math.PI * 2; return a + d * k; };
+
+  function step() {
+    const dt = Math.min(0.05, clock.getDelta()); t += dt;
+
+    // input
+    let ix = 0, iz = 0, run = false;
+    if (started) {
+      ix = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0) + J.x;
+      iz = (keys.KeyS || keys.ArrowDown ? 1 : 0) - (keys.KeyW || keys.ArrowUp ? 1 : 0) + J.z;
+      run = keys.ShiftLeft || keys.ShiftRight || J.run;
+    }
+    let L = Math.hypot(ix, iz); if (L > 1) { ix /= L; iz /= L; L = 1; }
+    const target = L > 0.05 ? (run ? 9.5 : 5.5) * L : 0;
+    P.speed += (target - P.speed) * Math.min(1, dt * 10);
+    if (L > 0.05) P.yaw = lerpAngle(P.yaw, Math.atan2(ix, iz), Math.min(1, dt * 12));
+    if (P.speed > 0.01 && L > 0.05) {
+      P.x += ix / L * P.speed * dt; P.z += iz / L * P.speed * dt;
+    }
+    // collisions
+    for (const c of colliders) {
+      const dx = P.x - c.x, dz = P.z - c.z, d = Math.hypot(dx, dz), min = c.r + 0.45;
+      if (d < min && d > 1e-4) { P.x = c.x + dx / d * min; P.z = c.z + dz / d * min; }
+    }
+    const dc = Math.hypot(P.x, P.z), maxR = ISLAND - 1.5;
+    if (dc > maxR) { P.x *= maxR / dc; P.z *= maxR / dc; }
+
+    // animate player
+    const moving = P.speed > 0.3;
+    P.phase += dt * (moving ? P.speed * 1.6 : 0);
+    const sw = moving ? Math.sin(P.phase) * Math.min(0.9, P.speed * 0.12) : 0;
+    limbs.lLeg.rotation.x = sw; limbs.rLeg.rotation.x = -sw;
+    limbs.lArm.rotation.x = -sw * 0.9; limbs.rArm.rotation.x = sw * 0.9;
+    const bob = moving ? Math.abs(Math.sin(P.phase)) * 0.08 : Math.sin(t * 2) * 0.015;
+    player.position.set(P.x, bob, P.z);
+    player.rotation.y = P.yaw;
+    torso.rotation.x = moving ? Math.min(0.15, P.speed * 0.015) : 0;
+    blob.position.set(P.x, 0.03, P.z);
+
+    // stations
+    let near = null, nd = 1e9;
+    world.forEach(w => {
+      const d = Math.hypot(P.x - w.tx, P.z - w.tz);
+      if (d < 3.0 && d < nd) { near = w; nd = d; }
+      const pulse = reduced ? 1 : 1 + Math.sin(t * 3 + w.i) * 0.06;
+      w.ring.scale.setScalar(w === active ? 1.12 : pulse);
+      w.label.position.y = 6.6 + (reduced ? 0 : Math.sin(t * 1.5 + w.i) * 0.15);
+    });
+    if (started && near !== active) {
+      active = near;
+      if (active) { visit(active); if (closedFor !== active) showCard(active); }
+      else { hideCard(); closedFor = null; }
+    }
+
+    // guide arrow
+    const nextW = world.find(w => !w.visited && w !== active);
+    if (started && nextW) {
+      const dx = nextW.tx - P.x, dz = nextW.tz - P.z, d = Math.hypot(dx, dz);
+      arrow.visible = d > 4;
+      const ang = Math.atan2(dx, dz);
+      arrow.position.set(P.x + dx / d * 1.9, 0.06, P.z + dz / d * 1.9);
+      arrow.rotation.set(-Math.PI / 2, ang + Math.PI, 0);
+      arrow.material.opacity = 0.6 + Math.sin(t * 5) * 0.3;
+      $("next").hidden = false;
+      $("next").innerHTML = `Next stop: <b>${pad2(nextW.i + 1)} ${nextW.s.title}</b>`;
+    } else {
+      arrow.visible = false;
+      const all = world.every(w => w.visited);
+      $("next").hidden = !(started && all);
+      if (started && all) $("next").innerHTML = "All stops seen · <b>contact is at stop 11</b>";
+    }
+
+    // fade trees standing between the camera and the player
+    trees.forEach(tr => {
+      const dz = tr.z - P.z, block = started && dz > -0.5 && dz < 9 && Math.abs(tr.x - P.x) < 2.6 + dz * 0.15;
+      const want = block ? 0.22 : 1;
+      if (Math.abs(tr.o - want) > 0.01) {
+        tr.o += (want - tr.o) * Math.min(1, dt * 8);
+        tr.mats.forEach(m => { m.opacity = tr.o; m.depthWrite = tr.o > 0.9; });
+      }
+    });
+
+    // ambient animation
+    animated.forEach(f => f(t));
+    clouds.forEach(c => { c.userData.a += c.userData.sp * dt; c.position.x = Math.cos(c.userData.a) * c.userData.r; c.position.z = Math.sin(c.userData.a) * c.userData.r; });
+    lampMat.emissiveIntensity = 1 + Math.sin(t * 2) * 0.3;
+
+    // camera
+    if (!started) {
+      const a = t * 0.08 + 0.3;
+      camera.position.set(Math.sin(a) * 46, 26, Math.cos(a) * 46);
+      camera.lookAt(0, 0, 0);
+      camPos.copy(camera.position);
+    } else {
+      const want = new THREE.Vector3(P.x, 0, P.z).add(camOffset());
+      camPos.lerp(want, Math.min(1, dt * 3.2));
+      camera.position.copy(camPos);
+      camera.lookAt(P.x, 1.2, P.z - 1.5);
+    }
+
+    renderer.render(scene, camera);
+    requestAnimationFrame(step);
+  }
+
+  updateHud();
+  // Redraw printed textures once fonts arrive so signs use the right faces
+  const ready = document.fonts && document.fonts.ready ? Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1500))]) : Promise.resolve();
+  ready.then(() => world.forEach(w => w.label.userData.draw(w.visited)));
+  requestAnimationFrame(step);
+})();
+</script>
+
+</body></html>
